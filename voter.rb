@@ -1,4 +1,5 @@
-require_relative 'candidate'
+# require './candidate'
+
 # Choose a party
 #################################################################
 def choose_party
@@ -108,12 +109,15 @@ end
   # List of Arrays created
   #################################################################
   def list_characters_created
+    Testing Candidates
     @voters.each do |voter|
+      puts "-----Voter-----"
       puts("Name:     #{voter.name};")
-      puts("Party:    #{voter.party}")
+      puts("Party:    #{voter.party};")
       puts("Politics: #{voter.politics};")
     end
     @candidates.each do |candidate|
+      puts "-----Candidate-----"
       puts("Name:   #{candidate.name};")
       puts("Party:  #{candidate.party};")
     end
@@ -147,19 +151,19 @@ class Voter
         # Verbal Argument will be in stump speach lol
         if voter.politics == "Libertarian" && rand < 0.90
           puts "Voting Republican"
-          true
+          @party = "Republican"
         elsif voter.politics = "Conservative" && rand < 0.75
           puts "Voting Republican"
-          true
+          @party = "Republican"
         elsif voter.politics = "Independent" && rand < 0.50
           puts "Voting Republican"
-          true
+          @party = "Republican"
         elsif voter.politics = "Progressive" && rand < 0.25
           puts "Voting Republican"
-          true
+          @party = "Republican"
         elsif voter.politics = "Massachusetts Democrat" && rand < 0.10
           puts "Voting Republican"
-          true
+          @party = "Republican"
         else
           false
         end
@@ -169,19 +173,19 @@ class Voter
         # Verbal Argument will be in stump speach lol
         if voter.politics == "Libertarian" && rand > 0.90
           puts "Voting Democrat"
-          true
+          @party = "Democrat"
         elsif voter.politics = "Conservative" && rand > 0.75
           puts "Voting Democrat"
-          true
+          @party = "Democrat"
         elsif voter.politics = "Independent" && rand > 0.50
           puts "Voting Democrat"
-          true
+          @party = "Democrat"
         elsif voter.politics = "Progressive" && rand > 0.25
           puts "Voting Democrat"
-          true
+          @party = "Democrat"
         elsif voter.politics = "Massachusetts Democrat" && rand > 0.10
           puts "Voting Democrat"
-          true
+          @party = "Democrat"
         else
           false
         end
@@ -189,6 +193,34 @@ class Voter
     else
       puts "Not valid."
       listen
+    end
+  end
+end
+
+#Testing Class Within File
+class Candidate < Voter
+  attr_accessor :name, :party
+
+  def initialize(name, party)
+    @name = name
+    @party = party
+  end
+
+  def politics
+    # There is actually a range of politics within
+    # each party, so this isn't so cut-and-dry.
+    if party == "Republican"
+      "Conservative"
+    else
+      "Progressive"
+    end
+  end
+
+  def stump(voters)
+    voters.each do |v|
+      v.listen(party)
+      if @party.eql? "Democrat"
+
     end
   end
 end
