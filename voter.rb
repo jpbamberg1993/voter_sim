@@ -1,5 +1,3 @@
-# require './candidate'
-
 # Choose a party
 #################################################################
 def choose_party
@@ -83,7 +81,7 @@ end
     main_decision = gets.chomp.downcase
     main_decision = main_decision[0]
     case main_decision
-    # When Voter chosen
+    # Voter chosen
     #################################################################
     when "v"
       print "Name: "
@@ -92,7 +90,7 @@ end
       choose_politics
       @voters.push(Voter.new(@name, @party, @politics)) # Not sure if correct
       main_selector
-    # When Candidate chosen
+    # Candidate chosen
     #################################################################
     when "c"
       print "Name: "
@@ -109,61 +107,157 @@ end
   # List of Arrays created
   #################################################################
   def list_characters_created
-    Testing Candidates
+    @candidates.each do |candidate|
+      puts "-----Candidate-----"
+      puts("Name:   #{candidate.name};")
+      puts("Party:  #{candidate.party};")
+    end
     @voters.each do |voter|
       puts "-----Voter-----"
       puts("Name:     #{voter.name};")
       puts("Party:    #{voter.party};")
       puts("Politics: #{voter.politics};")
     end
-    @candidates.each do |candidate|
-      puts "-----Candidate-----"
-      puts("Name:   #{candidate.name};")
-      puts("Party:  #{candidate.party};")
-    end
+    main_selector
   end
 
   def update_character
-
+    puts "Do you want to delete or update?"
+    decision = gets.chomp.downcase
+    decision = decision[0]
+    case decision
+    when "d"
+      puts "(C)andidate or (V)oter?"
+      case gets.chomp.downcase
+      when "c"
+        puts "What the name?"
+        name = gets.chomp
+        @candidates.each do |candidate|
+          if candidate.name.eql? name
+            @candidates.delete(candidate)
+            main_selector
+          else
+            puts "We don't have that name! Remember case sensitive!"
+          end
+        end
+      when "v"
+        puts "What's the name?"
+        name = gets.chomp
+        @voters.each do |voter|
+          if voter.name.eql? name
+            @voters.delete(voter)
+            main_selector
+          end
+        end
+      else
+        puts "Try again!"
+        update_character
+      end
+    when "u"
+      print "(C)andidate or (V)oter? "
+      case gets.chomp.downcase
+      when "c"
+        print "What is his name? "
+        name = gets.chomp
+        print "(N)ame? (P)arty? "
+        case gets.chomp.downcase
+        when "n"
+          @candidates.each do |candidate|
+            if candidate.name.eql? name
+              puts "What do you want the new name to be?"
+              candidate.name = gets.chomp
+              main_selector
+            end
+          end
+        when "p"
+          @candidates.each do |candidate|
+            if candidate.name.eql? name
+              puts "What do you want the new party to be?"
+              candidate.party = gets.chomp
+              main_selector
+            end
+          end
+        else
+          puts "Fuck off!"
+        end
+      when "v"
+        print "What is his name?"
+        name = gets.chomp
+        print "(N)ame? (P)art? (Po)litics? "
+        case gets.chomp.downcase
+        when "n"
+          @voters.each do |voter|
+            if voter.name.eql? name
+              puts "What do you want the name to be?"
+              voter.name = gets.chomp
+              main_selector
+            end
+          end
+        when "p"
+          @voters.each do |voter|
+            if voter.name.eql? name
+              puts "What do you want the party to be?"
+              voter.party = gets.chomp
+              main_selector
+            end
+          end
+        when "po"
+          @voters.each do |voter|
+            if voter.name.eql? name
+              puts "What do you want the politics to be?"
+              voter.politics = gets.chomp
+              main_selector
+            end
+          end
+        else
+          puts "I don't caare about you anymore!"
+          main_selector
+        end
+      else
+        puts "Try again!"
+        update_character
+      end
+    else
+      puts "Try again!"
+      update_character
+    end
   end
 
   def vote
-
+    test_voting = Voter.new(@name, @party, @politics)
+    test_voting.listen(@voters)
   end
 
 end
 
 class Voter
-  attr_accessor :voters, :name, :party, :politics
+  attr_accessor :name, :party, :politics, :candidates, :voters
 
   def initialize(name, party, politics)
-    @name		 	= name
-    @party    = party
-    @politics = politics
-    @voted    = false
+    @name		 	  = name
+    @party      = party
+    @politics   = politics
+    @candidates = candidates
+    @voters     = voters
+    @voted      = false
   end
 
   def listen(voter)
     # I don't know how to seperate Candidates by party
-    case candidates.party
+    case candidates.include? ''
     when "Republican"
       @voters.each do |voter|
         # Verbal Argument will be in stump speach lol
         if voter.politics == "Libertarian" && rand < 0.90
-          puts "Voting Republican"
-          @party = "Republican"
+          true
         elsif voter.politics = "Conservative" && rand < 0.75
-          puts "Voting Republican"
-          @party = "Republican"
+          true
         elsif voter.politics = "Independent" && rand < 0.50
-          puts "Voting Republican"
-          @party = "Republican"
+          true
         elsif voter.politics = "Progressive" && rand < 0.25
-          puts "Voting Republican"
-          @party = "Republican"
+          true
         elsif voter.politics = "Massachusetts Democrat" && rand < 0.10
-          puts "Voting Republican"
-          @party = "Republican"
+          true
         else
           false
         end
@@ -172,20 +266,15 @@ class Voter
       @voters.each do |voter|
         # Verbal Argument will be in stump speach lol
         if voter.politics == "Libertarian" && rand > 0.90
-          puts "Voting Democrat"
-          @party = "Democrat"
+          true
         elsif voter.politics = "Conservative" && rand > 0.75
-          puts "Voting Democrat"
-          @party = "Democrat"
+          true
         elsif voter.politics = "Independent" && rand > 0.50
-          puts "Voting Democrat"
-          @party = "Democrat"
+          true
         elsif voter.politics = "Progressive" && rand > 0.25
-          puts "Voting Democrat"
-          @party = "Democrat"
+          true
         elsif voter.politics = "Massachusetts Democrat" && rand > 0.10
-          puts "Voting Democrat"
-          @party = "Democrat"
+          true
         else
           false
         end
@@ -199,34 +288,60 @@ end
 
 #Testing Class Within File
 class Candidate < Voter
-  attr_accessor :name, :party
+  attr_accessor :name, :party, :votes, :vote_counter
 
   def initialize(name, party)
-    @name = name
-    @party = party
+    @name         = name
+    @party        = party
+    @votes        = votes
+    @vote_counter = Hash.new {|name, votes| @name[@votes] = 1}
   end
 
-  def politics
-    # There is actually a range of politics within
-    # each party, so this isn't so cut-and-dry.
-    if party == "Republican"
-      "Conservative"
-    else
-      "Progressive"
-    end
-  end
+  # Already did when creating person
+  # def politics
+  #   # There is actually a range of politics within
+  #   # each party, so this isn't so cut-and-dry.
+  #   if party == "Republican"
+  #     "Conservative"
+  #   else
+  #     "Progressive"
+  #   end
+  # end
 
   def stump(voters)
     voters.each do |v|
       v.listen(party)
-      if @party.eql? "Democrat"
-
+      if voters.eql?("Democrat")
+        print "Voting Blue"
+        @votes += 1
+      elsif voters.eql?("Republican")
+        print "Voting Red"
+        @votes += 1
+      else
+        print "Not Voting"
+      end
     end
   end
 end
 
 test = MainMenu.new
 test.main_selector
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
