@@ -2,8 +2,8 @@
 #################################################################
 def choose_party
   print "Party? Democrat or Republican: "
-  @party = gets.chomp.downcase
-  @party = @party[0]
+  party = gets.chomp.downcase
+  @party = party[0]
   case @party
   when "d"
     puts "You are a Democrat!"
@@ -21,8 +21,8 @@ end
 #################################################################
 def choose_politics
   print "Politics? Progressive, Conservative, Libertarian, Massachusetts Democrat, or Independent: "
-  @politics = gets.chomp.downcase
-  @politics = @politics[0]
+  politics = gets.chomp.downcase
+  @politics = politics[0]
   case @politics
   when "p"
     @politics = "Progressive"
@@ -51,6 +51,7 @@ class MainMenu
 def initialize
   @voters       = Array.new
   @candidates   = Array.new
+  @votes        = 0
 end
 
 # Player takes intial decision about how to proceed with the game
@@ -224,102 +225,104 @@ end
   end
 
   def vote
-    test_voting = Voter.new(@name, @party, @politics)
-    test_voting.listen(@voters)
+    run_simulation = RunSimulation.new(@candidates, @voters)
+    run_simulation.stump_given
   end
 
 end
 
 class Voter
-  attr_accessor :name, :party, :politics, :candidates, :voters
+  attr_accessor :name, :party, :politics
 
   def initialize(name, party, politics)
-    @name		 	  = name
+    @name       = name
     @party      = party
     @politics   = politics
-    @candidates = candidates
-    @voters     = voters
-    @voted      = false
   end
 
-  def listen(voter)
-    # I don't know how to seperate Candidates by party
-    case candidates.include? ''
-    when "Republican"
-      @voters.each do |voter|
-        # Verbal Argument will be in stump speach lol
-        if voter.politics == "Libertarian" && rand < 0.90
-          true
-        elsif voter.politics = "Conservative" && rand < 0.75
-          true
-        elsif voter.politics = "Independent" && rand < 0.50
-          true
-        elsif voter.politics = "Progressive" && rand < 0.25
-          true
-        elsif voter.politics = "Massachusetts Democrat" && rand < 0.10
-          true
-        else
-          false
-        end
-      end
-    when "Democrat"
-      @voters.each do |voter|
-        # Verbal Argument will be in stump speach lol
-        if voter.politics == "Libertarian" && rand > 0.90
-          true
-        elsif voter.politics = "Conservative" && rand > 0.75
-          true
-        elsif voter.politics = "Independent" && rand > 0.50
-          true
-        elsif voter.politics = "Progressive" && rand > 0.25
-          true
-        elsif voter.politics = "Massachusetts Democrat" && rand > 0.10
-          true
-        else
-          false
-        end
-      end
-    else
-      puts "Not valid."
-      listen
+  def listen(candidate)
+    if candidate.stump_speach(self)
+      candidate.votes += 1
     end
   end
+
 end
 
 #Testing Class Within File
 class Candidate < Voter
-  attr_accessor :name, :party, :votes, :vote_counter
+  attr_accessor :name, :party, :votes
 
   def initialize(name, party)
     @name         = name
     @party        = party
-    @votes        = votes
-    @vote_counter = Hash.new {|name, votes| @name[@votes] = 1}
+    @votes        = 1
   end
 
   # Already did when creating person
-  # def politics
-  #   # There is actually a range of politics within
-  #   # each party, so this isn't so cut-and-dry.
-  #   if party == "Republican"
-  #     "Conservative"
-  #   else
-  #     "Progressive"
-  #   end
-  # end
-
-  def stump(voters)
-    voters.each do |v|
-      v.listen(party)
-      if voters.eql?("Democrat")
-        print "Voting Blue"
-        @votes += 1
-      elsif voters.eql?("Republican")
-        print "Voting Red"
-        @votes += 1
+  def politics(voter)
+    # There is actually a range of politics within
+    # each party, so this isn't so cut-and-dry.
+    case @party
+    when "Republican"
+      if voter.politics.eql? 'Libertarian' && rand > 0.10
+        true
+      elsif voter.politics.eql? 'Conservative' && rand > 0.25
+        true
+      elsif voter.politics.eql? 'Independent' && rand > 0.50
+        true
+      elsif voter.politics.eql? 'Progressive' && rand > 0.75
+        true
+      elsif voter.politics.eql? 'Massachusetts Democrat' && rand > 0.90
+        true
       else
-        print "Not Voting"
+        false
       end
+    when "Democrat"
+      if voter.politics.eql? 'Libertarian' && rand < 0.10
+        true
+      elsif voter.politics.eql? 'Conservative' && rand < 0.25
+        true
+      elsif voter.politics.eql? 'Independent' && rand < 0.50
+        true
+      elsif voter.politics.eql? 'Progressive' && rand < 0.75
+        true
+      elsif voter.politics.eql? 'Massachusetts Democrat' && rand < 0.90
+        true
+      else
+        false
+      end
+    else
+      false
+    end
+  end
+
+  def stump_speach(voter)
+    politics(voter)
+  end
+
+end
+
+class RunSimulation
+  attr_reader :voters, :election_day
+
+  def initialize(candidates, voters)
+    @candidates     = candidates
+    @voters         = voters
+    @election_day   = Array.new
+  end
+
+  def stump_given
+    candidate = @candidates.delete(@candidates.sample)
+    @voters.each do |voter|
+      voter.listen(candidate)
+    end
+    @election_day.push(candidate)
+    tally
+  end
+
+  def tally
+    @election_day.each do |candidate|
+      puts("#{candidate.name}: #{@votes}")
     end
   end
 end

@@ -1,5 +1,5 @@
 # require './voter'
-#
+
 # class Candidate < Voter
 #   attr_accessor :name, :party
 #

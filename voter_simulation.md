@@ -84,4 +84,4 @@ Candidates are also Voters, but they will always vote for themselves.
 You should practice using TDD to help you manage this large project.
 
 ----- Create Hash to store result of votes
------ 
+-----
