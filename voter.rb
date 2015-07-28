@@ -51,7 +51,6 @@ class MainMenu
 def initialize
   @voters       = Array.new
   @candidates   = Array.new
-  @votes        = 0
 end
 
 # Player takes intial decision about how to proceed with the game
@@ -258,44 +257,6 @@ class Candidate < Voter
     @votes        = 1
   end
 
-  # Already did when creating person
-  def politics(voter)
-    # There is actually a range of politics within
-    # each party, so this isn't so cut-and-dry.
-    case @party
-    when "Republican"
-      if voter.politics.eql? 'Libertarian' && rand > 0.10
-        true
-      elsif voter.politics.eql? 'Conservative' && rand > 0.25
-        true
-      elsif voter.politics.eql? 'Independent' && rand > 0.50
-        true
-      elsif voter.politics.eql? 'Progressive' && rand > 0.75
-        true
-      elsif voter.politics.eql? 'Massachusetts Democrat' && rand > 0.90
-        true
-      else
-        false
-      end
-    when "Democrat"
-      if voter.politics.eql? 'Libertarian' && rand < 0.10
-        true
-      elsif voter.politics.eql? 'Conservative' && rand < 0.25
-        true
-      elsif voter.politics.eql? 'Independent' && rand < 0.50
-        true
-      elsif voter.politics.eql? 'Progressive' && rand < 0.75
-        true
-      elsif voter.politics.eql? 'Massachusetts Democrat' && rand < 0.90
-        true
-      else
-        false
-      end
-    else
-      false
-    end
-  end
-
   def stump_speach(voter)
     politics(voter)
   end
@@ -308,23 +269,55 @@ class RunSimulation
   def initialize(candidates, voters)
     @candidates     = candidates
     @voters         = voters
-    @election_day   = Array.new
+    @election_day   = Hash.new
   end
 
   def stump_given
-    candidate = @candidates.delete(@candidates.sample)
-    @voters.each do |voter|
-      voter.listen(candidate)
-    end
-    @election_day.push(candidate)
-    tally
+    puts "#{@candidates}"
+    puts "#{@voters}"
   end
 
-  def tally
-    @election_day.each do |candidate|
-      puts("#{candidate.name}: #{@votes}")
+  def politics(voter)
+    # There is actually a range of politics within
+    # each party, so this isn't so cut-and-dry.
+    case @party
+    when "Republican"
+      if voter.politics.eql? 'Libertarian' && rand > 0.10
+        tally(voter)
+      elsif voter.politics.eql? 'Conservative' && rand > 0.25
+        tally(voter)
+      elsif voter.politics.eql? 'Independent' && rand > 0.50
+        tally(voter)
+      elsif voter.politics.eql? 'Progressive' && rand > 0.75
+        tally(voter)
+      elsif voter.politics.eql? 'Massachusetts Democrat' && rand > 0.90
+        tally(voter)
+      else
+        false
+      end
+    when "Democrat"
+      if voter.politics.eql? 'Libertarian' && rand < 0.10
+        tally(voter)
+      elsif voter.politics.eql? 'Conservative' && rand < 0.25
+        tally(voter)
+      elsif voter.politics.eql? 'Independent' && rand < 0.50
+        tally(voter)
+      elsif voter.politics.eql? 'Progressive' && rand < 0.75
+        tally(voter)
+      elsif voter.politics.eql? 'Massachusetts Democrat' && rand < 0.90
+        tally(voter)
+      else
+        false
+      end
+    else
+      false
     end
   end
+
+  def tally(candidate, voter)
+    @election_day[candidate.name] += 1
+  end
+
 end
 
 test = MainMenu.new
