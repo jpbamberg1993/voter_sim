@@ -224,8 +224,9 @@ end
   end
 
   def vote
-    run_simulation = RunSimulation.new(@candidates, @voters)
-    run_simulation.stump_given
+    run_sim = RunSimulation.new(@candidates, @voters)
+    run_sim.check_for_voters
+    run_sim.results_are_in
   end
 
 end
@@ -234,88 +235,155 @@ class Voter
   attr_accessor :name, :party, :politics
 
   def initialize(name, party, politics)
-    @name       = name
-    @party      = party
-    @politics   = politics
+    @name = name
+    @party = party
+    @politics = politics
   end
-
-  def listen(candidate)
-    if candidate.stump_speach(self)
-      candidate.votes += 1
-    end
-  end
-
 end
 
 #Testing Class Within File
-class Candidate < Voter
-  attr_accessor :name, :party, :votes
+class Candidate
+  attr_accessor :name, :party
 
   def initialize(name, party)
-    @name         = name
-    @party        = party
-    @votes        = 1
-  end
-
-  def stump_speach(voter)
-    politics(voter)
+    @name = name
+    @party = party
   end
 
 end
 
 class RunSimulation
-  attr_reader :voters, :election_day
+  attr_reader :candidates, :voters, :party, :poll_results
 
   def initialize(candidates, voters)
     @candidates     = candidates
     @voters         = voters
-    @election_day   = Hash.new
+    @poll_results   = {Democrat: 0, Republican: 0}
+  end
+  #
+  # def stump_given
+  #   puts "#{@candidates}"
+  #   puts "#{@voters}"
+  # end
+
+  def check_for_voters
+    @candidates.each do |candidate|
+      @voters.each do |voter|
+        politics(candidate, voter)
+      end
+    end
   end
 
-  def stump_given
-    puts "#{@candidates}"
-    puts "#{@voters}"
-  end
-
-  def politics(voter)
+  def politics(candidate, voter)
+    # puts "Candidates-Name: #{candidate.name} ---- Candidate-Party: #{candidate.party}"
+    # puts "Voter: #{voter.name}"
     # There is actually a range of politics within
     # each party, so this isn't so cut-and-dry.
-    case @party
+    case candidate.party
     when "Republican"
-      if voter.politics.eql? 'Libertarian' && rand > 0.10
-        tally(voter)
-      elsif voter.politics.eql? 'Conservative' && rand > 0.25
-        tally(voter)
-      elsif voter.politics.eql? 'Independent' && rand > 0.50
-        tally(voter)
-      elsif voter.politics.eql? 'Progressive' && rand > 0.75
-        tally(voter)
-      elsif voter.politics.eql? 'Massachusetts Democrat' && rand > 0.90
-        tally(voter)
+      if voter.politics.eql? 'Libertarian'
+        if rand > 0.10
+            @poll_results[:Republican] += 1
+          p "Vote for me I will steal money for you! Republicans + 1!!!!"
+          # @dem = @poll_results[:Democrat]
+          # tally(candidate, voter)
+          # true
+        end
+      elsif voter.politics.eql? 'Conservative'
+        if rand > 0.25
+            @poll_results[:Republican] += 1
+            p "Vote for me I will steal money for you! Republicans + 1!!!!"
+          # @dem = @poll_results[:Democrat]
+          # tally(candidate, voter)
+          # true
+        end
+      elsif voter.politics.eql? 'Independent'
+        if rand > 0.50
+            @poll_results[:Republican] += 1
+            p "Vote for me I will steal money for you! Republicans + 1!!!!"
+          # @dem = @poll_results[:Democrat]
+          # tally(candidate, voter)
+          # true
+        end
+      elsif voter.politics.eql? 'Progressive'
+        if rand > 0.75
+            @poll_results[:Republican] += 1
+            p "Vote for me I will steal money for you! Republicans + 1!!!!"
+          # @dem = @poll_results[:Democrat]
+          # tally(candidate, voter)
+          # true
+        end
+      elsif voter.politics.eql? 'Massachusetts Democrat'
+        if rand > 0.90
+            @poll_results[:Republican] += 1
+            p "Vote for me I will steal money for you! Republicans + 1!!!!"
+          # @dem = @poll_results[:Democrat]
+          # tally(candidate, voter)
+          # true
+        end
       else
+        puts "Republican Failed"
         false
       end
     when "Democrat"
-      if voter.politics.eql? 'Libertarian' && rand < 0.10
-        tally(voter)
-      elsif voter.politics.eql? 'Conservative' && rand < 0.25
-        tally(voter)
-      elsif voter.politics.eql? 'Independent' && rand < 0.50
-        tally(voter)
-      elsif voter.politics.eql? 'Progressive' && rand < 0.75
-        tally(voter)
-      elsif voter.politics.eql? 'Massachusetts Democrat' && rand < 0.90
-        tally(voter)
+      if voter.politics.eql? 'Libertarian'
+        if rand < 0.10
+            @poll_results[:Democrat] += 1
+          p "Vote for me because I am Robin Hood. Democrats + 1!!!!!!!"
+          # @rep = @poll_results[:Republican]
+          # tally(candidate, voter)
+          # true
+        end
+      elsif voter.politics.eql? 'Conservative'
+        if rand < 0.25
+            @poll_results[:Democrat] += 1
+            p "Vote for me because I am Robin Hood. Democrats + 1!!!!!!!"
+          # @rep = @poll_results[:Republican]
+          # tally(candidate, voter)
+          # true
+        end
+      elsif voter.politics.eql? 'Independent'
+        if rand < 0.50
+            @poll_results[:Democrat] += 1
+            p "Vote for me because I am Robin Hood. Democrats + 1!!!!!!!"
+          # @rep = @poll_results[:Republican]
+          # tally(candidate, voter)
+          # true
+        end
+      elsif voter.politics.eql? 'Progressive'
+        if rand < 0.75
+            @poll_results[:Democrat] += 1
+            p "Vote for me because I am Robin Hood. Democrats + 1!!!!!!!"
+          # @rep = @poll_results[:Republican]
+          # tally(candidate, voter)
+          # true
+        end
+      elsif voter.politics.eql? 'Massachusetts Democrat'
+        if rand < 0.90
+            @poll_results[:Democrat] += 1
+            p "Vote for me because I am Robin Hood. Democrats + 1!!!!!!!"
+          # @rep = @poll_results[:Republican]
+          # tally(candidate, voter)
+          # true
+        end
       else
+        puts "Democrat Failed"
         false
       end
     else
+      puts "Method Failed"
       false
     end
   end
 
-  def tally(candidate, voter)
-    @election_day[candidate.name] += 1
+  def results_are_in
+    if @poll_results[:Democrat] > @poll_results[:Republican]
+      puts "The Democrats have Won! We don't have to go to War! #{@poll_results[:Democrat]}"
+    elsif @poll_results[:Democrat] < @poll_results[:Republican]
+      puts "The Republicans have Won! Let's stack paper! #{@poll_results[:Republican]}"
+    else
+      puts "It's a tie! No Body cares!"
+    end
   end
 
 end
@@ -356,6 +424,63 @@ test.main_selector
 
 
 
+#
+# class RunSimulation
+#   attr_reader :voters, :election_day
+#
+#   def initialize(candidates, voters)
+#     @candidates     = candidates
+#     @voters         = voters
+#     @election_day   = Hash.new
+#   end
+#
+#   def stump_given
+#     puts "#{@candidates}"
+#     puts "#{@voters}"
+#   end
+#
+#   def politics(voter)
+#     # There is actually a range of politics within
+#     # each party, so this isn't so cut-and-dry.
+#     case @party
+#     when "Republican"
+#       if voter.politics.eql? 'Libertarian' && rand > 0.10
+#         tally(voter)
+#       elsif voter.politics.eql? 'Conservative' && rand > 0.25
+#         tally(voter)
+#       elsif voter.politics.eql? 'Independent' && rand > 0.50
+#         tally(voter)
+#       elsif voter.politics.eql? 'Progressive' && rand > 0.75
+#         tally(voter)
+#       elsif voter.politics.eql? 'Massachusetts Democrat' && rand > 0.90
+#         tally(voter)
+#       else
+#         false
+#       end
+#     when "Democrat"
+#       if voter.politics.eql? 'Libertarian' && rand < 0.10
+#         tally(voter)
+#       elsif voter.politics.eql? 'Conservative' && rand < 0.25
+#         tally(voter)
+#       elsif voter.politics.eql? 'Independent' && rand < 0.50
+#         tally(voter)
+#       elsif voter.politics.eql? 'Progressive' && rand < 0.75
+#         tally(voter)
+#       elsif voter.politics.eql? 'Massachusetts Democrat' && rand < 0.90
+#         tally(voter)
+#       else
+#         false
+#       end
+#     else
+#       false
+#     end
+#   end
+#
+#   def tally(candidate, voter)
+#     @election_day[candidate.name] += 1
+#   end
+#
+# end
 
 
 
